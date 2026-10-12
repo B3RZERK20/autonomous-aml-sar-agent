@@ -31,12 +31,12 @@ def compliance_analyst_node(state: AMLInvestigationState) -> Dict[str, Any]:
     queries = []
     
     # 1. Detect Structuring / Smurfing Patterns
-    cash_deposits = [t for t in flagged_txs if "CASH" in t.get("transaction_type", "").upper() or "below $10,000" in t.get("flag_reason", "")]
+    cash_deposits = [t for t in flagged_txs if "CASH" in (t.get("transaction_type") or "").upper() or "below $10,000" in (t.get("flag_reason") or "")]
     if cash_deposits:
         queries.append("What is the FinCEN regulatory definition and legal threshold for structuring under 31 CFR 1010.311 and CTR reporting?")
 
     # 2. Detect Offshore Movement / Shell Company Layering
-    offshore_txs = [t for t in flagged_txs if "WIRE" in t.get("transaction_type", "").upper() or "offshore" in t.get("flag_reason", "").lower()]
+    offshore_txs = [t for t in flagged_txs if "WIRE" in (t.get("transaction_type") or "").upper() or "offshore" in (t.get("flag_reason") or "").lower()]
     if offshore_txs or len(state.get("linked_entities", [])) > 1:
         queries.append("What are FATF recommendations 24 and 25 regarding ultimate beneficial ownership and offshore shell company layering?")
 

@@ -122,8 +122,8 @@ def _generate_deterministic_compliant_sar(
         flagged = transactions
 
     # Calculate exact sums from ground-truth data
-    cash_deposits = [t for t in flagged if "CASH" in t.get("transaction_type", "").upper() or "below $10,000" in t.get("flag_reason", "")]
-    wire_txs = [t for t in flagged if "WIRE" in t.get("transaction_type", "").upper() or "offshore" in t.get("flag_reason", "").lower()]
+    cash_deposits = [t for t in flagged if "CASH" in (t.get("transaction_type") or "").upper() or "below $10,000" in (t.get("flag_reason") or "")]
+    wire_txs = [t for t in flagged if "WIRE" in (t.get("transaction_type") or "").upper() or "offshore" in (t.get("flag_reason") or "").lower()]
 
     total_structured_cash = sum(t.get("amount", 0.0) for t in cash_deposits)
     total_wire_outbound = sum(t.get("amount", 0.0) for t in wire_txs)

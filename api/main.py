@@ -154,6 +154,27 @@ async def standalone_evaluation_endpoint(req: StandaloneEvalRequest):
     return result
 
 
+@app.post("/api/benchmark/run")
+async def run_benchmark_endpoint():
+    """
+    Executes the Arize Phoenix offline evaluation benchmark suite across golden datasets,
+    populating Datasets, Experiments, Evaluators, and Prompts in Phoenix.
+    """
+    try:
+        from observability.seed_phoenix_benchmarks import seed_phoenix_benchmarks
+        phoenix_url = os.getenv("PHOENIX_COLLECTOR_ENDPOINT", "http://localhost:6006")
+        exp = seed_phoenix_benchmarks(base_url=phoenix_url)
+        return {
+            "status": "SUCCESS",
+            "message": "Phoenix Benchmark & Evaluation suite executed successfully.",
+            "phoenix_dashboard_url": phoenix_url,
+            "experiment_id": getattr(exp, "experiment_id", "completed")
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Phoenix benchmark failed: {str(e)}")
+
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("api.main:app", host="0.0.0.0", port=8000, reload=True)

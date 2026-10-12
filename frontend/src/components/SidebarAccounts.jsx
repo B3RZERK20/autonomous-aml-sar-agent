@@ -1,12 +1,15 @@
 import React from 'react';
-import { UserCheck, AlertTriangle, ShieldCheck, Play, Loader2 } from 'lucide-react';
+import { UserCheck, AlertTriangle, ShieldCheck, Play, Loader2, FlaskConical, ExternalLink } from 'lucide-react';
 
 export default function SidebarAccounts({ 
   accounts, 
   selectedAccountId, 
   onSelectAccount, 
   onInvestigate, 
-  loading 
+  loading,
+  onRunBenchmark,
+  benchmarkLoading,
+  benchmarkSuccess
 }) {
   return (
     <aside className="sidebar-container">
@@ -60,7 +63,7 @@ export default function SidebarAccounts({
         <button
           className="btn-primary-action"
           onClick={onInvestigate}
-          disabled={loading}
+          disabled={loading || benchmarkLoading}
         >
           {loading ? (
             <>
@@ -74,6 +77,34 @@ export default function SidebarAccounts({
             </>
           )}
         </button>
+
+        <button
+          className="btn-secondary-benchmark"
+          onClick={onRunBenchmark}
+          disabled={loading || benchmarkLoading}
+          title="Runs Phoenix evaluation benchmark suite across golden test datasets, populating Datasets, Experiments, Evaluators, and Prompts in Phoenix"
+        >
+          {benchmarkLoading ? (
+            <>
+              <Loader2 size={16} className="spin-icon" />
+              <span>Running Phoenix Benchmark...</span>
+            </>
+          ) : (
+            <>
+              <FlaskConical size={16} />
+              <span>Run Phoenix Benchmark & Evals</span>
+            </>
+          )}
+        </button>
+
+        {benchmarkSuccess && (
+          <div className="benchmark-success-pill">
+            <span>✅ Phoenix Benchmark Complete!</span>
+            <a href="http://localhost:6006" target="_blank" rel="noreferrer">
+              Open Phoenix Dashboard (:6006) <ExternalLink size={11} style={{ display: 'inline', verticalAlign: 'middle' }} />
+            </a>
+          </div>
+        )}
       </div>
     </aside>
   );

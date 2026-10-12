@@ -2,6 +2,12 @@ import React from 'react';
 import { ShieldAlert, Activity, ExternalLink, Cpu } from 'lucide-react';
 
 export default function Header({ status }) {
+  const isReady =
+    status?.database === 'CONNECTED' ||
+    status?.ai_service?.status === 'CONNECTED' ||
+    status?.ai_service?.details?.database === 'CONNECTED' ||
+    status?.status === 'HEALTHY';
+
   return (
     <header className="app-header">
       <div className="header-brand">
@@ -20,7 +26,7 @@ export default function Header({ status }) {
       <div className="header-actions">
         <div className="status-pill">
           <span className="pulsing-dot" />
-          <span className="status-text">{status?.database === 'CONNECTED' ? 'MCP & RAG Ready' : 'Connecting...'}</span>
+          <span className="status-text">{isReady ? 'MCP & RAG Ready' : 'Connecting...'}</span>
         </div>
 
         <div className="zero-model-tag" title="Zero heavy models downloaded locally: Cloud API & Local Embeddings">

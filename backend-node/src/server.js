@@ -45,6 +45,11 @@ app.get('/api/health', async (req, res) => {
 
   res.json({
     gateway: 'HEALTHY',
+    status: aiServiceStatus === 'CONNECTED' ? 'HEALTHY' : 'DEGRADED',
+    database: aiHealthDetails?.database || (aiServiceStatus === 'CONNECTED' ? 'CONNECTED' : 'DISCONNECTED'),
+    mcp_server: aiHealthDetails?.mcp_server || 'READY',
+    rag_chroma: aiHealthDetails?.rag_chroma || 'INITIALIZED',
+    phoenix_tracing: aiHealthDetails?.phoenix_tracing || 'ENABLED',
     node_version: process.version,
     timestamp: new Date().toISOString(),
     ai_service: {
@@ -178,6 +183,22 @@ app.post('/api/eval', async (req, res) => {
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: 'Evaluator proxy error', details: err.message });
+  }
+});
+
+/**
+ * Trigger Arize Phoenix Offline Evaluation Benchmarks & Experiments
+ */
+app.post('/api/benchmark/run', async (req, res) => {
+  try {
+    const response = await fetch(`${PYTHON_AI_URL}/api/benchmark/run`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const result = await response.json();
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: 'Benchmark execution failed', details: err.message });
   }
 });
 

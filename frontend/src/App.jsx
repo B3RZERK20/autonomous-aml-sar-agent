@@ -100,6 +100,28 @@ export default function App() {
     }
   };
 
+  const [benchmarkLoading, setBenchmarkLoading] = useState(false);
+  const [benchmarkSuccess, setBenchmarkSuccess] = useState(false);
+
+  const handleRunBenchmark = async () => {
+    if (benchmarkLoading) return;
+    setBenchmarkLoading(true);
+    setBenchmarkSuccess(false);
+    try {
+      const res = await fetch('/api/benchmark/run', { method: 'POST' });
+      const data = await res.json();
+      if (res.ok) {
+        setBenchmarkSuccess(true);
+      } else {
+        alert('Benchmark execution error: ' + (data.detail || data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Failed to connect to benchmark runner: ' + err.message);
+    } finally {
+      setBenchmarkLoading(false);
+    }
+  };
+
   const currentProfile = accountDetails || {
     account_id: selectedAccountId,
     account_name: 'Derrick Sterling / Apex Horizon LLC',
@@ -128,6 +150,9 @@ export default function App() {
           }}
           onInvestigate={handleInvestigate}
           loading={investigating}
+          onRunBenchmark={handleRunBenchmark}
+          benchmarkLoading={benchmarkLoading}
+          benchmarkSuccess={benchmarkSuccess}
         />
 
         <section className="aml-workspace-area">

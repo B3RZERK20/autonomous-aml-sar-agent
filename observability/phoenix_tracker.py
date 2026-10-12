@@ -55,7 +55,8 @@ def setup_phoenix_observability(port: int = 6006) -> Optional[Any]:
                 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
             if hasattr(sys.stderr, "buffer"):
                 sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
-            _PHOENIX_SESSION = px.launch_app(port=port)
+            host = os.getenv("PHOENIX_HOST", "0.0.0.0")
+            _PHOENIX_SESSION = px.launch_app(host=host, port=port)
         finally:
             sys.stdout = orig_stdout
             sys.stderr = orig_stderr
