@@ -1,24 +1,28 @@
 # ==============================================================================
 # Python AI Core Microservice (LangGraph, MCP Server, Chroma RAG, FastAPI)
+# Optimized with Astral uv (10-100x faster than standard pip) & CPU wheels
 # ==============================================================================
 FROM python:3.10-slim
 
-# Prevent Python from writing .pyc and buffer stdout/stderr
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONUTF8=1
+ENV UV_SYSTEM_PYTHON=1
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    curl \
+# Install curl for healthchecks
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python requirements
+# Copy high-speed uv binary from official Astral image
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# Install dependencies using uv with CPU torch wheel index (saves 2.3+ GB of CUDA bloat)
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN uv pip install --system \
+    --extra-index-url https://download.pytorch.org/whl/cpu \
+    -r requirements.txt
 
 # Copy source code and regulatory corpus
 COPY agents/ ./agents/
@@ -33,5 +37,5 @@ COPY .env.example .
 # Expose FastAPI (8000) and Arize Phoenix (6006)
 EXPOSE 8000 6006
 
-# Startup script to seed SQLite and launch FastAPI
+# Startup script to seed SQLite, index Chroma, and launch FastAPI
 CMD ["sh", "-c", "python mcp_server/mock_db.py && python rag/vector_store.py && uvicorn api.main:app --host 0.0.0.0 --port 8000"]

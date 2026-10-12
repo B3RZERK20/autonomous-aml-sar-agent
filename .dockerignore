@@ -26,3 +26,6 @@ data/processed/chroma/
 
 # Environment & local secrets
 .env.local
+
+# Docker logs
+build.log
