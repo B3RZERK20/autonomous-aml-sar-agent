@@ -1,0 +1,37 @@
+# ==============================================================================
+# Python AI Core Microservice (LangGraph, MCP Server, Chroma RAG, FastAPI)
+# ==============================================================================
+FROM python:3.10-slim
+
+# Prevent Python from writing .pyc and buffer stdout/stderr
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONUTF8=1
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python requirements
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy source code and regulatory corpus
+COPY agents/ ./agents/
+COPY api/ ./api/
+COPY data/raw/ ./data/raw/
+COPY mcp_server/ ./mcp_server/
+COPY observability/ ./observability/
+COPY rag/ ./rag/
+COPY tests/ ./tests/
+COPY .env.example .
+
+# Expose FastAPI (8000) and Arize Phoenix (6006)
+EXPOSE 8000 6006
+
+# Startup script to seed SQLite and launch FastAPI
+CMD ["sh", "-c", "python mcp_server/mock_db.py && python rag/vector_store.py && uvicorn api.main:app --host 0.0.0.0 --port 8000"]

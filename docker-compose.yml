@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # Python AI Core Service: LangGraph Multi-Agent, MCP Tools, Chroma RAG
+  ai-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.ai
+    container_name: aml-ai-service
+    ports:
+      - "8000:8000"   # FastAPI REST API & Swagger UI
+      - "6006:6006"   # Arize Phoenix Observability Telemetry
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PHOENIX_PORT=6006
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  # Node.js API Gateway & React JSX Production Frontend
+  web-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+    container_name: aml-web-gateway
+    ports:
+      - "5000:5000"   # Unified Executive Compliance Dashboard
+    depends_on:
+      ai-service:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - NODE_PORT=5000
+      - PYTHON_AI_URL=http://ai-service:8000
+    restart: unless-stopped
+
+networks:
+  default:
+    name: aml-compliance-network

@@ -1,0 +1,22 @@
+================================================================================
+FINANCIAL CRIMES ENFORCEMENT NETWORK & FATF JOINT GUIDANCE
+TRADE-BASED MONEY LAUNDERING (TBML) & SMURFING RED FLAGS
+================================================================================
+
+1. TRADE-BASED MONEY LAUNDERING (TBML) DEFINITION
+- Standard Definition: Trade-Based Money Laundering is the process of disguising the proceeds of crime and moving value through the use of trade transactions in an attempt to legitimize their illicit origins or facilitate illicit operations.
+- Core Techniques:
+  1. Over-invoicing and Under-invoicing of goods and services: By invoicing goods at below fair market value, the seller transfers value to the buyer. By over-invoicing, the buyer transfers excess value to the seller.
+  2. Multiple Invoicing for the Same Shipment: Invoicing one shipment multiple times to justify payments without goods movement.
+  3. Short or Over-shipping: The quantity or quality of goods delivered differs materially from shipping invoices and customs declarations.
+  4. Phantom / Ghost Shipments: Fictitious trade documentation generated where no actual merchandise moves across borders.
+
+2. STRUCTURING & SMURFING TYPOLOGY RED FLAGS
+- Sequential Cash Deposits: Multiple cash deposits made under the $10,000 threshold within short time windows (e.g. 24 to 72 hours) across automated teller machines (ATMs) or branch networks.
+- Funnel Accounts: Funds deposited at multiple geographical locations by different individuals ("smurfs") into a single centralized account, followed immediately by wire transfer to an offshore jurisdiction.
+- Immediate Outbound Wire: Rapid fund dissipation where deposits are swiftly wired out to unrelated offshore third parties or shell entities within hours of receipt, leaving a nominal balance.
+- Uncharacteristic Activity: Account transaction volume or turnover that is inconsistent with the customer's known business line, declared salary, or historical financial profile.
+
+3. CIP & CDD (CUSTOMER DUE DILIGENCE) DEFICIENCIES
+- Concealed Beneficial Ownership: Inability or refusal of corporate account holders to provide verifiable UBO documentation.
+- High-Risk Offshore Counterparties: Regular commercial payments sent to jurisdictions designated by FATF as jurisdictions under increased monitoring or non-cooperative jurisdictions.

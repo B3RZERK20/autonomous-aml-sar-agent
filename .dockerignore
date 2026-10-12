@@ -1,0 +1,28 @@
+# Version control
+.git
+.gitignore
+
+# Python virtual environment & cache
+.venv
+venv
+__pycache__
+*.py[cod]
+*$py.class
+.pytest_cache
+
+# Node.js dependencies & builds
+node_modules
+frontend/node_modules
+backend-node/node_modules
+frontend/dist
+
+# Database & Chroma cache (seeded on container start)
+data/database/*.db
+data/processed/chroma/
+.chroma/
+
+# Telemetry
+.phoenix
+
+# Environment & local secrets
+.env.local

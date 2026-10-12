@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous AML Investigation & FinCEN SAR Agent</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #07090e;
+            --bg-surface: #0e131f;
+            --bg-card: #141c2e;
+            --bg-card-hover: #19243b;
+            --border-subtle: #1e293b;
+            --border-bright: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --accent-purple: #8b5cf6;
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            line-height: 1.5;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 10%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 90%, rgba(139, 92, 246, 0.06) 0%, transparent 40%);
+        }
+
+        /* Top Navigation Header */
+        header {
+            background: rgba(14, 19, 31, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-badge {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1rem;
+            color: #fff;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.35);
+        }
+
+        .brand-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .brand-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .phoenix-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: var(--accent-amber);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.4rem 0.8rem;
+            border-radius: 9999px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .phoenix-pill:hover {
+            background: rgba(245, 158, 11, 0.2);
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent-emerald);
+            box-shadow: 0 0 8px var(--accent-emerald);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.9); }
+        }
+
+        /* Main Container */
+        .app-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Left Sidebar: Alert Queue & Account Explorer */
+        .sidebar-panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            height: calc(100vh - 120px);
+            position: sticky;
+            top: 90px;
+            overflow-y: auto;
+        }
+
+        .panel-heading {
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .badge-count {
+            background: rgba(244, 63, 94, 0.2);
+            color: var(--accent-rose);
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 700;
+        }
+
+        .account-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .account-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-cyan);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .account-card.active {
+            border-color: var(--accent-cyan);
+            background: rgba(6, 182, 212, 0.08);
+            box-shadow: 0 0 16px rgba(6, 182, 212, 0.2);
+        }
+
+        .account-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .account-id {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-cyan);
+        }
+
+        .risk-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .risk-high {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--accent-rose);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+
+        .risk-low {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-emerald);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .account-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .account-details {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Investigation Trigger Button */
+        .btn-investigate {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 0.85rem;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        }
+
+        .btn-investigate:hover {
+            opacity: 0.95;
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.45);
+            transform: translateY(-1px);
+        }
+
+        .btn-investigate:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Main Workspace Panels */
+        .main-workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Multi-Agent Orchestration Flow Banner */
+        .agents-flow-bar {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 1.25rem 1.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .agent-step {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .agent-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-bright);
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        .agent-step.active .agent-icon {
+            background: rgba(6, 182, 212, 0.2);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+            animation: pulse 1.5s infinite;
+        }
+
+        .agent-step.done .agent-icon {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--accent-emerald);
+            color: var(--accent-emerald);
+        }
+
+        .agent-meta {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .agent-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .agent-role {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .step-arrow {
+            color: var(--border-bright);
+            font-size: 1.2rem;
+        }
+
+        /* Two Column Content Area */
+        .content-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Evidence & Graph Card */
+        .card-panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Audit Log Terminal */
+        .terminal-box {
+            background: #05070a;
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            height: 380px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .log-line {
+            display: flex;
+            gap: 0.75rem;
+            align-items: baseline;
+            line-height: 1.4;
+        }
+
+        .log-time {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+
+        .log-agent {
+            color: var(--accent-cyan);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .log-agent.guardrail {
+            color: var(--accent-emerald);
+        }
+
+        .log-agent.analyst {
+            color: var(--accent-purple);
+        }
+
+        .log-agent.writer {
+            color: var(--accent-amber);
+        }
+
+        .log-msg {
+            color: #cbd5e1;
+        }
+
+        /* Transaction List */
+        .tx-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        .tx-table th {
+            text-align: left;
+            padding: 0.5rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .tx-table td {
+            padding: 0.6rem 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            font-family: var(--font-mono);
+        }
+
+        .flagged-tx-badge {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--accent-rose);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Final SAR Report View */
+        .sar-report-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 1.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .sar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 1rem;
+        }
+
+        .sar-badge-verified {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: var(--accent-emerald);
+            padding: 0.4rem 0.85rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .sar-badge-revision {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: var(--accent-amber);
+            padding: 0.4rem 0.85rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .sar-narrative-container {
+            background: #080c14;
+            border: 1px solid var(--border-bright);
+            border-radius: 10px;
+            padding: 1.25rem;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            max-height: 480px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .stat-val {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            margin-top: 0.25rem;
+        }
+
+        .btn-copy {
+            background: var(--bg-card);
+            border: 1px solid var(--border-bright);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-copy:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-cyan);
+        }
+
+        @media (max-width: 1200px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar-panel {
+                height: auto;
+                position: relative;
+                top: 0;
+            }
+            .content-split {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="brand-container">
+            <div class="brand-badge">FinCEN AI</div>
+            <div>
+                <h1 class="brand-title">Autonomous AML Investigation & SAR Agent</h1>
+                <p class="brand-subtitle">Powered by LangGraph • Model Context Protocol (MCP) • Local RAG • Phoenix Observability</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text-secondary);">
+                <div class="status-dot"></div>
+                <span>MCP & RAG Active</span>
+            </div>
+            <a href="http://localhost:6006" target="_blank" class="phoenix-pill" title="Open Arize Phoenix OpenTelemetry tracing UI">
+                <span>🔥 Arize Phoenix Tracing (Port 6006)</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Application Grid -->
+    <main class="app-container">
+        
+        <!-- Left Column: Accounts & Alerts -->
+        <aside class="sidebar-panel">
+            <div class="panel-heading">
+                <span>Suspect Accounts & Alerts</span>
+                <span class="badge-count" id="flaggedCount">5 Flagged Alerts</span>
+            </div>
+
+            <div id="accountsList" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <!-- Populated via API -->
+                <div style="color: var(--text-muted); font-size: 0.85rem;">Loading accounts...</div>
+            </div>
+
+            <button class="btn-investigate" id="btnInvestigate" onclick="triggerInvestigation()">
+                <span>⚡ Run Autonomous Investigation</span>
+            </button>
+        </aside>
+
+        <!-- Right Column: Multi-Agent Workspace -->
+        <section class="main-workspace">
+            
+            <!-- LangGraph 4-Agent Flow Bar -->
+            <div class="agents-flow-bar">
+                <div class="agent-step" id="step-gatherer">
+                    <div class="agent-icon">1</div>
+                    <div class="agent-meta">
+                        <span class="agent-name">Data Gatherer</span>
+                        <span class="agent-role">MCP Database & Watchlist</span>
+                    </div>
+                </div>
+                <div class="step-arrow">➔</div>
+                <div class="agent-step" id="step-analyst">
+                    <div class="agent-icon">2</div>
+                    <div class="agent-meta">
+                        <span class="agent-name">Compliance Analyst</span>
+                        <span class="agent-role">FinCEN & FATF RAG</span>
+                    </div>
+                </div>
+                <div class="step-arrow">➔</div>
+                <div class="agent-step" id="step-writer">
+                    <div class="agent-icon">3</div>
+                    <div class="agent-meta">
+                        <span class="agent-name">SAR Writer</span>
+                        <span class="agent-role">BSA Form 111 Generator</span>
+                    </div>
+                </div>
+                <div class="step-arrow">➔</div>
+                <div class="agent-step" id="step-evaluator">
+                    <div class="agent-icon">4</div>
+                    <div class="agent-meta">
+                        <span class="agent-name">Evaluator Guardrail</span>
+                        <span class="agent-role">Hallucination Audit</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Row -->
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <span class="stat-label">Investigation Subject</span>
+                    <span class="stat-val" id="statSubject">Derrick Sterling</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Suspicious Volume</span>
+                    <span class="stat-val" id="statAmount" style="color: var(--accent-rose);">$75,700.00</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Evaluator Faithfulness</span>
+                    <span class="stat-val" id="statFaithfulness" style="color: var(--accent-emerald);">100%</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Workflow Status</span>
+                    <span class="stat-val" id="statStatus" style="color: var(--accent-cyan);">READY</span>
+                </div>
+            </div>
+
+            <!-- Two Column: Real-time Agent Audit Log & MCP Evidence -->
+            <div class="content-split">
+                <div class="card-panel">
+                    <div class="section-title">
+                        <span>Terminal: LangGraph Multi-Agent Audit Log</span>
+                    </div>
+                    <div class="terminal-box" id="auditLogBox">
+                        <div class="log-line">
+                            <span class="log-time">[System]</span>
+                            <span class="log-msg">Select a target account and click "Run Autonomous Investigation" to launch the agent workflow.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-panel">
+                    <div class="section-title">
+                        <span>MCP Evidence: Transactions & Graph Links</span>
+                    </div>
+                    <div style="max-height: 380px; overflow-y: auto;">
+                        <table class="tx-table" id="txTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Timestamp</th>
+                                    <th>Flag</th>
+                                </tr>
+                            </thead>
+                            <tbody id="txTableBody">
+                                <tr><td colspan="5" style="color: var(--text-muted); padding: 1rem;">Select an account to view MCP transaction records.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Final Formatted Suspicious Activity Report -->
+            <div class="sar-report-card">
+                <div class="sar-header">
+                    <div>
+                        <h2 class="section-title">FinCEN Suspicious Activity Report (BSA Form 111)</h2>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem;">Official narrative generated by Agent 3 and verified by Agent 4 Guardrail</p>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem; align-items: center;">
+                        <span class="sar-badge-verified" id="sarBadge">
+                            <span>✓ 100% Faithfulness Verified</span>
+                        </span>
+                        <button class="btn-copy" onclick="copySarText()">📋 Copy SAR</button>
+                    </div>
+                </div>
+                <div class="sar-narrative-container" id="sarNarrative">Click "Run Autonomous Investigation" to generate the complete FinCEN SAR report narrative.</div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+        let selectedAccountId = "ACC-883910";
+        let isRunning = false;
+
+        async function loadAccounts() {
+            try {
+                const res = await fetch("/api/accounts");
+                const accounts = await res.json();
+                const container = document.getElementById("accountsList");
+                container.innerHTML = "";
+
+                accounts.forEach(acc => {
+                    const card = document.createElement("div");
+                    card.className = `account-card ${acc.account_id === selectedAccountId ? 'active' : ''}`;
+                    card.id = `card-${acc.account_id}`;
+                    card.onclick = () => selectAccount(acc.account_id);
+
+                    const isHigh = acc.risk_rating === "HIGH";
+                    card.innerHTML = `
+                        <div class="account-card-header">
+                            <span class="account-id">${acc.account_id}</span>
+                            <span class="risk-badge ${isHigh ? 'risk-high' : 'risk-low'}">${acc.risk_rating} RISK</span>
+                        </div>
+                        <div class="account-name">${acc.account_name}</div>
+                        <div class="account-details">
+                            <span>${acc.country} • ${acc.account_type}</span>
+                            <span>$${acc.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+
+                selectAccount(selectedAccountId);
+            } catch (err) {
+                console.error("Failed to load accounts:", err);
+            }
+        }
+
+        async function selectAccount(accountId) {
+            selectedAccountId = accountId;
+            document.querySelectorAll(".account-card").forEach(c => c.classList.remove("active"));
+            const target = document.getElementById(`card-${accountId}`);
+            if (target) target.classList.add("active");
+
+            // Fetch MCP transaction records
+            try {
+                const res = await fetch(`/api/accounts/${accountId}`);
+                const data = await res.json();
+                renderTransactions(data.transactions || []);
+                document.getElementById("statSubject").innerText = data.account_name || accountId;
+            } catch (err) {
+                console.error("Error loading account details:", err);
+            }
+        }
+
+        function renderTransactions(transactions) {
+            const tbody = document.getElementById("txTableBody");
+            if (!transactions || transactions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="color: var(--text-muted); padding: 1rem;">No transactions found.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = transactions.map(t => `
+                <tr>
+                    <td>${t.transaction_id}</td>
+                    <td>${t.transaction_type}</td>
+                    <td style="color: ${t.is_flagged ? 'var(--accent-rose)' : 'inherit'}; font-weight: 600;">$${t.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                    <td>${t.timestamp.replace('T', ' ').slice(0, 16)}</td>
+                    <td>${t.is_flagged ? '<span class="flagged-tx-badge">FLAGGED</span>' : '<span style="color: var(--text-muted);">CLEAN</span>'}</td>
+                </tr>
+            `).join('');
+        }
+
+        function setAgentActive(stepId) {
+            document.querySelectorAll(".agent-step").forEach(s => s.classList.remove("active"));
+            const el = document.getElementById(stepId);
+            if (el) el.classList.add("active");
+        }
+
+        function setAgentDone(stepId) {
+            const el = document.getElementById(stepId);
+            if (el) {
+                el.classList.remove("active");
+                el.classList.add("done");
+            }
+        }
+
+        async function triggerInvestigation() {
+            if (isRunning) return;
+            isRunning = true;
+            const btn = document.getElementById("btnInvestigate");
+            btn.disabled = true;
+            btn.innerText = "⏳ Multi-Agent System Investigating...";
+            document.getElementById("statStatus").innerText = "ANALYZING...";
+
+            // Reset flow steps
+            document.querySelectorAll(".agent-step").forEach(s => {
+                s.classList.remove("active");
+                s.classList.remove("done");
+            });
+
+            // Simulate step progression visually
+            setAgentActive("step-gatherer");
+            setTimeout(() => setAgentActive("step-analyst"), 1200);
+            setTimeout(() => setAgentActive("step-writer"), 2400);
+            setTimeout(() => setAgentActive("step-evaluator"), 3600);
+
+            try {
+                const res = await fetch("/api/investigate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ account_id: selectedAccountId })
+                });
+                const result = await res.json();
+
+                // Mark all steps done
+                ["step-gatherer", "step-analyst", "step-writer", "step-evaluator"].forEach(s => setAgentDone(s));
+
+                // Render Audit Log
+                const logBox = document.getElementById("auditLogBox");
+                logBox.innerHTML = "";
+                (result.audit_log || []).forEach(log => {
+                    const row = document.createElement("div");
+                    row.className = "log-line";
+                    let agentClass = "";
+                    if (log.agent.includes("Guardrail")) agentClass = "guardrail";
+                    else if (log.agent.includes("Analyst")) agentClass = "analyst";
+                    else if (log.agent.includes("Writer")) agentClass = "writer";
+
+                    row.innerHTML = `
+                        <span class="log-time">[${log.timestamp.slice(11, 19)}]</span>
+                        <span class="log-agent ${agentClass}">[${log.agent}]</span>
+                        <span class="log-msg">${log.action}</span>
+                    `;
+                    logBox.appendChild(row);
+                });
+                logBox.scrollTop = logBox.scrollHeight;
+
+                // Render Stats
+                const sar = result.sar_draft || {};
+                const evalResult = result.evaluation || {};
+                document.getElementById("statAmount").innerText = `$${(sar.suspicious_amount_total_usd || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                
+                const score = Math.round((evalResult.faithfulness_score || 1.0) * 100);
+                document.getElementById("statFaithfulness").innerText = `${score}%`;
+                document.getElementById("statStatus").innerText = result.status || "VERIFIED";
+
+                // Render Badge
+                const badge = document.getElementById("sarBadge");
+                if (evalResult.is_faithful) {
+                    badge.className = "sar-badge-verified";
+                    badge.innerHTML = `<span>✓ ${score}% Faithfulness Approved</span>`;
+                } else {
+                    badge.className = "sar-badge-revision";
+                    badge.innerHTML = `<span>⚠ Revision Required (${score}%)</span>`;
+                }
+
+                // Render SAR Text
+                document.getElementById("sarNarrative").innerText = sar.full_sar_text || "No narrative generated.";
+
+            } catch (err) {
+                console.error("Investigation failed:", err);
+                alert("Investigation encountered an error: " + err.message);
+            } finally {
+                isRunning = false;
+                btn.disabled = false;
+                btn.innerText = "⚡ Run Autonomous Investigation";
+            }
+        }
+
+        function copySarText() {
+            const text = document.getElementById("sarNarrative").innerText;
+            navigator.clipboard.writeText(text);
+            alert("FinCEN SAR text copied to clipboard!");
+        }
+
+        window.onload = loadAccounts;
+    </script>
+</body>
+</html>

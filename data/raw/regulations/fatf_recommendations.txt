@@ -1,0 +1,20 @@
+================================================================================
+FINANCIAL ACTION TASK FORCE (FATF) - INTERNATIONAL STANDARDS ON COMBATING AML/CFT
+THE 40 RECOMMENDATIONS & HIGH-RISK JURISDICTION GUIDANCE
+================================================================================
+
+1. FATF RECOMMENDATION 20 - REPORTING OF SUSPICIOUS TRANSACTIONS
+- Core Standard: If a financial institution suspects or has reasonable grounds to suspect that funds are the proceeds of a criminal activity, or are related to terrorist financing, it should be required, by law, to report its suspicions promptly to the Financial Intelligence Unit (FIU).
+- Scope of Reporting: All suspicious transactions, including attempted transactions, should be reported regardless of the amount of the transaction.
+- Tipping-Off Protection: Financial institutions, their directors, officers, and employees should be protected by law from criminal and civil liability for breach of any restriction on disclosure of information imposed by contract or by any legislative, regulatory, or administrative provision.
+
+2. FATF RECOMMENDATION 24 & 25 - TRANSPARENCY AND BENEFICIAL OWNERSHIP OF LEGAL PERSONS
+- Beneficial Ownership Standard: Competent authorities must have access to accurate and up-to-date information on the ultimate beneficial ownership (UBO) and control of companies and other legal persons.
+- Definition of Ultimate Beneficial Owner (UBO): The natural person(s) who ultimately own or control a customer and/or the natural person on whose behalf a transaction is being conducted. It includes those persons who exercise ultimate effective control over a legal person or arrangement.
+- Shell Company Typology: The misuse of corporate vehicles such as shell companies, shelf companies, and bearer shares to obscure beneficial ownership is a primary methodology in international money laundering and sanctions evasion schemes.
+- Layering Through Offshore Jurisdictions: High-risk indicators include complex ownership chains spanning secrecy havens, nominee directors with no operational involvement, and companies incorporated in foreign jurisdictions without physical presence or dedicated local staff.
+
+3. HIGH-RISK JURISDICTIONS & SANCTIONS EVASION TYPOLOGIES
+- Sanctions Screening Mandates: Under FATF Recommendation 6 and 7, financial institutions must implement targeted financial sanctions to comply with United Nations Security Council Resolutions and unilateral designations (e.g., OFAC Specially Designated Nationals).
+- Secondary Evasion Schemes: Using intermediary entities in third-party transshipment hubs or offshore jurisdictions (such as Cyprus, UAE Free Zones, or Panama) to obscure the ultimate Russian, Iranian, or sanctioned destination of funds or goods.
+- Front Companies vs. Legitimate Entities: A front company combines illicit funds with legitimate business proceeds, often masking the identity of sanctioned beneficial owners or illicit originators.
